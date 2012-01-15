@@ -39,6 +39,8 @@ require_once $bootstrap . '/bootstrap.php';
 clearos_load_language('firewall_custom');
 clearos_load_language('base');
 
+// TODO: Merge dialog into theme
+
 header('Content-Type: application/x-javascript');
 
 echo "
@@ -49,7 +51,6 @@ $(document).ready(function() {
   });
   $('#entry').attr('style', 'width: 325');
   $('#description').attr('style', 'width: 325');
-  $('.left-field-content').css('width', '150');
 });
 
 function clearos_info(id, message) {
