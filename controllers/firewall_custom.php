@@ -65,17 +65,25 @@ class Firewall_Custom extends ClearOS_Controller
         // Load dependencies
         //------------------
 
-        $this->load->library('firewall_custom/Firewall_Custom');
         $this->lang->load('firewall_custom');
+        $this->load->library('firewall_custom/Firewall_Custom');
 
-        // Load views
-        //-----------
+        // Load view data
+        //---------------
 
-        $views = array('firewall_custom/summary');
+        try {
+            $data['rules'] = $this->firewall_custom->get_rules();
+        } catch (Exception $e) {
+            $this->page->view_exception($e);
+            return;
+        }
 
-        $data['rules'] = $this->firewall_custom->get_rules();
+        // Load view
+        //----------
 
-        $this->page->view_form('summary', $data, lang('firewall_custom_overview'));
+        $options['type'] = MY_Page::TYPE_REPORT;
+
+        $this->page->view_form('summary', $data, lang('firewall_custom_app_name'), $options);
     }
 
     /**
@@ -157,9 +165,6 @@ class Firewall_Custom extends ClearOS_Controller
         $this->lang->load('firewall_custom');
         $this->lang->load('base');
 
-        // Set validation rules
-        //---------------------
-
         // Handle form submit
         //-------------------
 
@@ -174,6 +179,7 @@ class Firewall_Custom extends ClearOS_Controller
             $this->page->set_status_updated();
         } catch (Exception $e) {
             $this->page->view_exception($e);
+            return;
         }
 
         redirect('/firewall_custom');
@@ -228,18 +234,21 @@ class Firewall_Custom extends ClearOS_Controller
         //---------------
 
         $this->load->library('firewall_custom/Firewall_Custom');
-        $this->lang->load('firewall_custom');
-        $this->lang->load('base');
+
+        // Load view data
+        //---------------
 
         try {
             $this->firewall_custom->set_rule_priority($line, $priority);
             $this->page->set_status_updated();
         } catch (Exception $e) {
             $this->page->view_exception($e);
+            return;
         }
 
-        $data['rules'] = $this->firewall_custom->get_rules();
+        // Load view
+        //----------
 
-        $this->page->view_form('summary', $data, lang('firewall_custom_overview'));
+        redirect('/firewall_custom');
     }
 }

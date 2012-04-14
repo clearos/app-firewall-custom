@@ -82,7 +82,7 @@ foreach ($rules as $rule) {
             anchor_delete('/app/firewall_custom/delete/' . $rule['line'])
         )
     );
-    $brief = substr($rule['entry'], 0, 20);
+    $brief = substr($rule['entry'], 0, 60);
     $item['details'] = array(
         $rule['description'],
         "<a href='#' class='view_rule' id='rule_id_" . $rule['line'] . "'>" . $brief . "...</a>",

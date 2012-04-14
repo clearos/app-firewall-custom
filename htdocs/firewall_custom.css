@@ -1,0 +1,12 @@
+/* TODO: provide best practices on this type of style override */
+td.theme-field-left {
+  width: 155;
+}
+
+td.theme-field-right {
+  width: 350;
+}
+
+#entry {
+  width: 340px;
+}
