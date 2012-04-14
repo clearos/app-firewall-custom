@@ -1,7 +1,7 @@
 
 Name: app-firewall-custom
 Epoch: 1
-Version: 1.0.10
+Version: 1.1.0
 Release: 1%{dist}
 Summary: Custom Firewall
 License: GPLv3
@@ -16,7 +16,7 @@ Requires: app-firewall-core
 Allows customized firewall rules to be added.
 
 %package core
-Summary: Custom Firewall - APIs and install
+Summary: Custom Firewall - Core
 License: LGPLv3
 Group: ClearOS/Libraries
 Requires: app-base-core
