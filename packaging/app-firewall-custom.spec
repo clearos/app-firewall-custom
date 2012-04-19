@@ -13,7 +13,7 @@ Requires: app-base
 Requires: app-firewall-core
 
 %description
-Allows customized firewall rules to be added.
+The Custom Firewall app provides a low-level tool to configure advanced firewall rules.
 
 %package core
 Summary: Custom Firewall - Core
@@ -22,7 +22,7 @@ Group: ClearOS/Libraries
 Requires: app-base-core
 
 %description core
-Allows customized firewall rules to be added.
+The Custom Firewall app provides a low-level tool to configure advanced firewall rules.
 
 This package provides the core API and libraries.
 
