@@ -85,7 +85,7 @@ foreach ($rules as $rule) {
     $brief = substr($rule['entry'], 0, 60);
     $item['details'] = array(
         $rule['description'],
-        "<a href='#' class='view_rule' id='rule_id_" . $rule['line'] . "'>" . $brief . "...</a>",
+        $brief,
         $priority,
     );
 
