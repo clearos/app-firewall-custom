@@ -29,3 +29,7 @@ $app['subcategory'] = lang('base_subcategory_firewall');
 $app['requires'] = array(
     'app-firewall-core'
 );
+
+$app['delete_dependency'] = array(
+    'app-firewall-custom-core'
+);
