@@ -82,7 +82,9 @@ foreach ($rules as $rule) {
             anchor_delete('/app/firewall_custom/delete/' . $rule['line'])
         )
     );
-    $brief = substr($rule['entry'], 0, 60);
+    $brief = $rule['entry'];
+    if (strlen($brief) > 50)
+        $brief = "<a href='#' class='view_rule' id='rule_id_" . $rule['line'] . "'>" . substr($rule['entry'], 0, 50) . '...</a>';
     $item['details'] = array(
         $rule['description'],
         $brief,
@@ -103,7 +105,7 @@ echo summary_table(
     $anchors,
     $headers,
     $items,
-    array ('sort' => FALSE)
+    array ('sort' => FALSE, 'id' => 'summary_rule_table')
 );
 echo "<script type='text/javascript'>var rules = new Array();\n";
 foreach ($js as $line) {
