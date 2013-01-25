@@ -94,25 +94,32 @@ class Firewall_Custom extends Engine
     // C O N S T A N T S
     ///////////////////////////////////////////////////////////////////////////////
 
-    protected $configuration = NULL;
-    protected $is_loaded = FALSE;
-
     const FILE_CONFIG = '/etc/clearos/firewall.d/custom';
     const FILE_FIREWALL_STATE = '/var/clearos/firewall/invalid.state';
     const MOVE_UP = -1;
     const MOVE_DOWN = 1;
 
     ///////////////////////////////////////////////////////////////////////////////
+    // V A R I A B L E S
+    ///////////////////////////////////////////////////////////////////////////////
+
+    protected $configuration = NULL;
+    protected $is_loaded = FALSE;
+    protected $commands = array();
+
+    ///////////////////////////////////////////////////////////////////////////////
     // M E T H O D S
     ///////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Firewall_Custom constructor.
+     * Custom firewall constructor.
      */
 
     function __construct()
     {
         clearos_profile(__METHOD__, __LINE__);
+
+        $this->commands = array('iptables', 'ebtables');
     }
 
     /**
@@ -131,64 +138,39 @@ class Firewall_Custom extends Engine
 
         $rules = array();
 
-        $index = -1;
+        $index = 0;
 
         foreach ($this->configuration as $entry) {
-            $index++;
-            $rule = array ('line' => $index, 'enabled' => 0, 'description' => '');
-            if (preg_match('/^\s*$/', $entry, $match)) {
-                // Blank line
-                continue;
-            } else if (preg_match('/^\s*#\s*iptables\s+([^#]*)#(.*)/', $entry, $match)) {
-                $rule['entry'] = 'iptables ' . trim($match[1]);
-                $rule['description'] = trim($match[2]);
-            } else if (preg_match('/^\s*#\s*iptables\s+(.*)/', $entry, $match)) {
-                $rule['entry'] = 'iptables ' . trim($match[1]);
-            } else if (preg_match('/^\s*#(.*)/', $entry, $match)) {
-                // Comment only
-                continue;
-            } else if (preg_match('/^\s*iptables\s+([^#]*)#(.*)/', $entry, $match)) {
-                $rule['entry'] = 'iptables ' . trim($match[1]);
-                $rule['enabled'] = 1;
-                $rule['description'] = trim($match[2]);
-            } else {
-                $rule['entry'] = trim($entry);
-                $rule['enabled'] = 1;
+
+            $rule = array (
+                'line' => $index,
+                'enabled' => FALSE,
+                'description' => ''
+            );
+
+            foreach ($this->commands as $command) {
+                if (preg_match("/^\s*#\s*$command\s+([^#]*)#(.*)/", $entry, $match)) {
+                    $rule['entry'] = $command . ' ' . trim($match[1]);
+                    $rule['enabled'] = FALSE;
+                    $rule['description'] = trim($match[2]);
+                } else if (preg_match("/^\s*#\s*$command\s+(.*)/", $entry, $match)) {
+                    $rule['entry'] = $command . ' ' . trim($match[1]);
+                    $rule['enabled'] = FALSE;
+                    $rule['description'] = '';
+                } else if (preg_match("/^\s*$command\s+([^#]*)#(.*)/", $entry, $match)) {
+                    $rule['entry'] = $command . ' ' . trim($match[1]);
+                    $rule['enabled'] = TRUE;
+                    $rule['description'] = trim($match[2]);
+                }
             }
-            $rules[$index] = $rule;
+
+            if (! empty($rule['entry']))
+                $rules[$index] = $rule;
+            
+            $index++;
         }
 
         return $rules;
-    }
-
-    /**
-     * Toggle rule status (enable/disable)
-     *
-     * @param String  $line   line work with
-     * @param boolean $status enable/disable
-     *
-     * @return void 
-     * @throws Engine_Exception
-     */
-
-    public function toggle_rule($line, $status)
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-        if (! $this->is_loaded)
-            $this->_load_configuration();
-
-        if ($status) {
-            if (preg_match('/^\s*#\s*iptables\s+(.*)/', $this->configuration[$line], $match))
-                $this->configuration[$line] = 'iptables ' . $match[1];
-            else
-                throw new Engine_Exception(lang('firewall_custom_configuration_file_parse_error'));
-            
-        } else {
-            $this->configuration[$line] = '# ' . $this->configuration[$line]; 
-        }
-
-        $this->_save_configuration();
     }
 
     /**
@@ -254,13 +236,13 @@ class Firewall_Custom extends Engine
                     // Blank line
                     $this->configuration[$linenumber - 1] = $this->configuration[$linenumber];
                     $this->configuration[$linenumber] = $swap;
-                } else if (preg_match('/^\s*iptables.*/', $entry)) {
+                } else if (preg_match('/^\s*[\w].*/', $entry)) {
                     // Not a comment...break;
                     break;
-                } else if (!preg_match('/^\s*#\s*iptables.*/', $entry)) {
+                } else if (!preg_match('/^\s*#/', $entry)) {
                     // Comment
                     $this->configuration[$linenumber - 1] = $this->configuration[$linenumber];
-                        $this->configuration[$linenumber] = $swap;
+                    $this->configuration[$linenumber] = $swap;
                 }
 
                 $linenumber++;
@@ -430,22 +412,29 @@ class Firewall_Custom extends Engine
     ///////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Validation iptables rule.
+     * Validation routine for firewall entry.
      *
-     * @param string $iptables iptables
+     * @param string $entry entry
      *
-     * @return mixed void if iptables is valid, errmsg otherwise
+     * @return string error message if entry is invalid
      */
 
-    public function validate_entry($iptables)
+    public function validate_entry($entry)
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        if (!preg_match("/^iptables.*/", $iptables))
-            return lang('firewall_custom_must_start_iptables');
+        $valid = FALSE;
 
-        if (preg_match("/;/", $iptables))
-            return lang('firewall_custom_firewall_rule_invalid');
+        foreach ($this->commands as $command) {
+            if (preg_match("/^$command\s+.*/", $entry))
+                $valid = TRUE;
+
+            if (preg_match("/;/", $entry))
+                return lang('firewall_custom_firewall_rule_invalid');
+        }
+
+        if (!$valid)
+            return lang('firewall_custom_command_is_not_permitted');
     }
 
     /**
