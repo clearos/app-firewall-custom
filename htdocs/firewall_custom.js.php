@@ -3,9 +3,9 @@
 /**
  * Javascript helper for Firewall_Custom.
  *
- * @category   Apps
- * @package    Firewall_Custom
- * @subpackage Javascript
+ * @category   apps
+ * @package    firewall-custom
+ * @subpackage javascript
  * @author     ClearCenter <developer@clearcenter.com>
  * @copyright  2011 ClearCenter
  * @license    http://www.clearcenter.com/Company/terms.html ClearSDN license

@@ -3,9 +3,9 @@
 /**
  * Firewall Custom controller.
  *
- * @category   Apps
- * @package    Firewall_Custom
- * @subpackage Controllers
+ * @category   apps
+ * @package    firewall-custom
+ * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
  * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
@@ -42,9 +42,9 @@ use \clearos\apps\firewall_custom\Firewall_Custom as Firewall_Custom_Class;
 /**
  * Firewall Custom controller.
  *
- * @category   Apps
- * @package    Firewall_Custom
- * @subpackage Controllers
+ * @category   apps
+ * @package    firewall-custom
+ * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
  * @copyright  2011 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
