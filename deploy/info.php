@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'firewall_custom';
-$app['version'] = '1.4.20';
+$app['version'] = '1.4.21';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -27,7 +27,8 @@ $app['subcategory'] = lang('base_subcategory_firewall');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['requires'] = array(
-    'app-firewall-core'
+    'app-firewall-core',
+    'app-network-core >= 1:1.5.1'
 );
 
 $app['delete_dependency'] = array(

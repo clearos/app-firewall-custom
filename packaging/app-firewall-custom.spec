@@ -1,7 +1,7 @@
 
 Name: app-firewall-custom
 Epoch: 1
-Version: 1.4.20
+Version: 1.4.21
 Release: 1%{dist}
 Summary: Custom Firewall
 License: GPLv3
@@ -11,6 +11,7 @@ Buildarch: noarch
 Requires: %{name}-core = 1:%{version}-%{release}
 Requires: app-base
 Requires: app-firewall-core
+Requires: app-network-core >= 1:1.5.1
 
 %description
 The Custom Firewall app provides a low-level tool to configure advanced firewall rules.

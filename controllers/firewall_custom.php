@@ -67,12 +67,14 @@ class Firewall_Custom extends ClearOS_Controller
 
         $this->lang->load('firewall_custom');
         $this->load->library('firewall_custom/Firewall_Custom');
+        $this->load->library('network/Network');
 
         // Load view data
         //---------------
 
         try {
             $data['rules'] = $this->firewall_custom->get_rules();
+            $data['network_mode'] = $this->network->get_mode();
         } catch (Exception $e) {
             $this->page->view_exception($e);
             return;
