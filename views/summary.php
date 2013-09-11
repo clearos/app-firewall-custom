@@ -72,6 +72,7 @@ foreach ($rules as $rule) {
     $state_anchor = 'anchor_' . $state;
 
     $item['title'] = $rule['description'];
+    $item['current_state'] = (bool)$rule['enabled'];
 
     $priority_buttons = array();
     if ($counter > 0)
@@ -109,12 +110,18 @@ foreach ($rules as $rule) {
 // Summary table
 ///////////////////////////////////////////////////////////////////////////////
 
+$options = array (
+    'sort' => FALSE,
+    'id' => 'summary_rule_table',
+    'row-enable-disable' => TRUE
+);
+
 echo summary_table(
     lang('firewall_custom_rules'),
     $anchors,
     $headers,
     $items,
-    array ('sort' => FALSE, 'id' => 'summary_rule_table')
+    $options
 );
 echo "<script type='text/javascript'>var rules = new Array();\n";
 foreach ($js as $line) {
