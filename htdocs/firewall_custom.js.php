@@ -49,9 +49,10 @@ $(document).ready(function() {
   });
   // Set width for all +/- buttons
   $('#summary_rule_table a').each (function() {
-    if ($(this + ':first-child').selector.match('.*priority.*')) {
-      ($(this).parent().parent()).css('white-space', 'nowrap');
-      $(this).css('width', '8px');
+    if ($(this).find('>:first-child').html() != undefined) {
+      if ($(this).find('>:first-child').html().match(/\+|\-/)) {
+        $(this).css('width', '10px');
+      }
     }
   });
 });
