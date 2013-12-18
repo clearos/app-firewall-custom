@@ -35,12 +35,15 @@
 
 use \clearos\apps\network\Network as Network;
 
-$this->lang->load('firewall_custom');
 $this->lang->load('firewall');
+$this->lang->load('firewall_custom');
 
 ///////////////////////////////////////////////////////////////////////////////
 // Warnings
 ///////////////////////////////////////////////////////////////////////////////
+
+if ($panic)
+    $this->load->view('firewall/panic');
 
 if ($network_mode == Network::MODE_TRUSTED_STANDALONE)
     $this->load->view('network/firewall_verify');
