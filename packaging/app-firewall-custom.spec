@@ -1,7 +1,7 @@
 
 Name: app-firewall-custom
 Epoch: 1
-Version: 1.5.1
+Version: 1.6.0
 Release: 1%{dist}
 Summary: Custom Firewall
 License: GPLv3
@@ -10,7 +10,7 @@ Source: %{name}-%{version}.tar.gz
 Buildarch: noarch
 Requires: %{name}-core = 1:%{version}-%{release}
 Requires: app-base
-Requires: app-firewall-core >= 1:1.5.19
+Requires: app-firewall >= 1:1.5.19
 Requires: app-network-core >= 1:1.5.1
 
 %description
