@@ -34,6 +34,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 $this->lang->load('base');
+$this->lang->load('firewall');
 $this->lang->load('firewall_custom');
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,9 +60,9 @@ if ($line >= 0) {
 ///////////////////////////////////////////////////////////////////////////////
 
 echo form_open($form);
-echo form_header(lang('firewall_custom_rule'));
+echo form_header(lang('firewall_rule'));
 
-echo field_input('entry', $entry, lang('firewall_custom_rule'));
+echo field_input('entry', $entry, lang('firewall_rule'));
 echo field_input('description', $description, lang('base_description'));
 echo field_toggle_enable_disable('enabled', $enabled, lang('base_status'));
 

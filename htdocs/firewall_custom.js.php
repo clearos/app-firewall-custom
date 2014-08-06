@@ -36,8 +36,9 @@
 $bootstrap = getenv('CLEAROS_BOOTSTRAP') ? getenv('CLEAROS_BOOTSTRAP') : '/usr/clearos/framework/shared';
 require_once $bootstrap . '/bootstrap.php';
 
-clearos_load_language('firewall_custom');
 clearos_load_language('base');
+clearos_load_language('firewall');
+clearos_load_language('firewall_custom');
 
 header('Content-Type: application/x-javascript');
 
@@ -58,7 +59,7 @@ $(document).ready(function() {
 });
 
 function clearos_info(id, message) {
-  $('#theme-page-container').append('<div id=\"dialog-' + id + '\" title=\"" . lang('firewall_custom_rule') . "\">' +
+  $('#theme-page-container').append('<div id=\"dialog-' + id + '\" title=\"" . lang('firewall_rule') . "\">' +
       '<p>' + message + '</p>' +
     '</div>'
   );

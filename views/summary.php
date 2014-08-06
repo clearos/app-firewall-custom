@@ -54,8 +54,8 @@ if ($network_mode == Network::MODE_TRUSTED_STANDALONE)
 
 $headers = array(
     lang('base_description'),
-    lang('firewall_custom_rule'),
-    lang('firewall_custom_priority')
+    lang('firewall_rule'),
+    lang('base_priority')
 );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,7 +120,7 @@ $options = array (
 );
 
 echo summary_table(
-    lang('firewall_custom_rules'),
+    lang('firewall_rules'),
     $anchors,
     $headers,
     $items,
