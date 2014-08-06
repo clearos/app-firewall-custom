@@ -27,8 +27,9 @@ $app['subcategory'] = lang('base_subcategory_firewall');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['requires'] = array(
-    'app-firewall >= 1:1.5.19',
-    'app-network-core >= 1:1.5.1'
+    'app-firewall >= 1:1.6.5',
+    'app-network-core >= 1:1.5.1',
+    'app-base-core >= 1:1.6.5'
 );
 
 $app['delete_dependency'] = array(

@@ -10,8 +10,9 @@ Source: %{name}-%{version}.tar.gz
 Buildarch: noarch
 Requires: %{name}-core = 1:%{version}-%{release}
 Requires: app-base
-Requires: app-firewall >= 1:1.5.19
+Requires: app-firewall >= 1:1.6.5
 Requires: app-network-core >= 1:1.5.1
+Requires: app-base-core >= 1:1.6.5
 
 %description
 The Custom Firewall app provides a low-level tool to configure advanced firewall rules.
