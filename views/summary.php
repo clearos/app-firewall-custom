@@ -48,14 +48,23 @@ if ($panic)
 if ($network_mode == Network::MODE_TRUSTED_STANDALONE)
     $this->load->view('network/firewall_verify');
 
+echo dialogbox_confirm(
+    lang('firewall_custom_restart_required'),
+    '/app/firewall_custom/restart',
+    '/app/firewall_custom',
+    array(
+        'id' => 'restart_required',
+        'hidden' => TRUE
+    )
+);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Headers
 ///////////////////////////////////////////////////////////////////////////////
 
 $headers = array(
     lang('base_description'),
-    lang('firewall_rule'),
-    lang('base_priority')
+    lang('firewall_rule')
 );
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,25 +77,13 @@ $anchors = array(anchor_add('/app/firewall_custom/add_edit'));
 // Rules
 ///////////////////////////////////////////////////////////////////////////////
 
-$counter = 0;
-foreach ($rules as $rule) {
+foreach ($rules as $line => $rule) {
     $key = $rule['protocol'] . '/' . $rule['port'];
     $state = ($rule['enabled']) ? 'disable' : 'enable';
     $state_anchor = 'anchor_' . $state;
 
     $item['title'] = $rule['description'];
     $item['current_state'] = (bool)$rule['enabled'];
-
-    $priority_buttons = array();
-    if ($counter > 0)
-        $priority_buttons[] = anchor_custom('/app/firewall_custom/priority/' . $rule['line'] . '/1', '+');
-    if ($counter < count($rules) - 1)
-        $priority_buttons[] = anchor_custom('/app/firewall_custom/priority/' . $rule['line'] . '/-1', '-');
-
-    if (empty($priority_buttons))
-        $priority = '---';
-    else
-        $priority = button_set($priority_buttons);
 
     $item['anchors'] = button_set(
         array(
@@ -95,18 +92,15 @@ foreach ($rules as $rule) {
             anchor_delete('/app/firewall_custom/delete/' . $rule['line'])
         )
     );
-    $brief = $rule['entry'];
-    if (strlen($brief) > 50)
-        $brief = "<a href='#' class='view_rule' id='rule_id_" . $rule['line'] . "'>" . substr($rule['entry'], 0, 50) . '...</a>';
+    $brief = "<span class='custom-rule'>" . $rule['entry'] . "</span><div class='theme-hidden'>" . $rule['raw'] . "</div>";
+    if (strlen($brief) > 20)
+        $brief = "<a href='#' class='view_rule'>" . substr($rule['entry'], 0, 20) . "...<span class='custom-rule theme-hidden'>" . $rule['entry'] . "</span><div class='theme-hidden'>" . $rule['raw'] . "</div></a>";
     $item['details'] = array(
         $rule['description'],
-        $brief,
-        $priority,
+        $brief
     );
 
     $items[] = $item;
-    $js[] = "rules['rule_id_" . $rule['line'] . "'] = '" . $rule['entry'] . "';";
-    $counter++;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -115,7 +109,8 @@ foreach ($rules as $rule) {
 
 $options = array (
     'sort' => FALSE,
-    'id' => 'summary_rule_table',
+    'id' => 'summary_rule',
+    'row-reorder' => TRUE,
     'row-enable-disable' => TRUE
 );
 
@@ -126,8 +121,3 @@ echo summary_table(
     $items,
     $options
 );
-echo "<script type='text/javascript'>var rules = new Array();\n";
-foreach ($js as $line) {
-    echo $line . "\n";
-}
-echo "</script>";

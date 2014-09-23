@@ -145,7 +145,8 @@ class Firewall_Custom extends Engine
             $rule = array (
                 'line' => $index,
                 'enabled' => FALSE,
-                'description' => ''
+                'description' => '',
+                'raw' => $entry
             );
 
             foreach ($this->commands as $command) {
@@ -302,6 +303,31 @@ class Firewall_Custom extends Engine
     }
 
     /**
+     * Set rules using array
+     *
+     * @param array $rules rules
+     *
+     * @return void
+     * @throws Engine_Exception
+     */
+
+    public function set_rules($rules)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (! $this->is_loaded)
+            $this->_load_configuration();
+
+        unset($this->configuration);
+
+        foreach ($rules as $rule)
+            $this->configuration[] = $rule;
+
+        // And save
+        $this->_save_configuration();
+    }
+
+    /**
      * Move rule up in table
      *
      * @param String $line      line to delete
@@ -405,6 +431,7 @@ class Firewall_Custom extends Engine
         //-------------------
 
         $file->add_lines(implode("\n", $this->configuration) . "\n");
+        $this->is_loaded = FALSE;
     }
 
     ///////////////////////////////////////////////////////////////////////////////

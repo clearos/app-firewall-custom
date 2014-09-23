@@ -255,4 +255,30 @@ class Firewall_Custom extends ClearOS_Controller
 
         redirect('/firewall_custom');
     }
+
+    /**
+     * Ajax set rules controller
+     *
+     * @return JSON
+     */
+
+    function set_rules()
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Content-type: application/json');
+
+        // Load libraries
+        //---------------
+
+        $this->load->library('firewall_custom/Firewall_Custom');
+        try {
+            $this->firewall_custom->set_rules(json_decode($_POST['rules']));
+            echo json_encode(array('code' => 0));
+        } catch (Exception $e) {
+            echo json_encode(Array('code' => clearos_exception_code($e), 'errmsg' => clearos_exception_message($e)));
+        }
+    }
+
 }
