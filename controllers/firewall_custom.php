@@ -85,9 +85,7 @@ class Firewall_Custom extends ClearOS_Controller
         // Load view
         //----------
 
-        $options['type'] = MY_Page::TYPE_WIDE_CONFIGURATION;
-
-        $this->page->view_form('summary', $data, lang('firewall_custom_app_name'), $options);
+        $this->page->view_form('summary', $data, lang('firewall_custom_app_name'));
     }
 
     /**
