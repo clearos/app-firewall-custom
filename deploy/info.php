@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'firewall_custom';
-$app['version'] = '2.0.18';
+$app['version'] = '2.0.19';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -13,6 +13,9 @@ $app['license'] = 'GPLv3';
 $app['license_core'] = 'LGPLv3';
 $app['summary'] = lang('firewall_custom_summary');
 $app['description'] = lang('firewall_custom_app_description');
+$app['tooltip'] = array(
+    lang('firewall_custom_help_dragging')
+);
 
 /////////////////////////////////////////////////////////////////////////////
 // App name and categories

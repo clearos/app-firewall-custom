@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if [ -e /etc/clearos/firewall.d/custom ]; then
+    logger -p local6.notice -t installer "app-firewall-custom-core - disabling custom firewall entries on un-install"
+    sed -i 's/^\s*\([^#]\)/# \1/' /etc/clearos/firewall.d/custom
+fi
