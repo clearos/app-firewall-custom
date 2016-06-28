@@ -119,7 +119,8 @@ class Firewall_Custom extends Engine
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $this->commands = array('iptables', 'ebtables');
+        // $IPTABLES constant for /usr/sbin/iptables to avoid locking issues
+        $this->commands = array('iptables', '$IPTABLES', 'ebtables');
     }
 
     /**
@@ -150,15 +151,15 @@ class Firewall_Custom extends Engine
             );
 
             foreach ($this->commands as $command) {
-                if (preg_match("/^\s*#\s*$command\s+([^#]*)#(.*)/", $entry, $match)) {
+                if (preg_match('/^\s*#\s*' . str_replace('$', '\$', $command) . '\s+([^#]*)#(.*)/', $entry, $match)) {
                     $rule['entry'] = $command . ' ' . trim($match[1]);
                     $rule['enabled'] = FALSE;
                     $rule['description'] = trim($match[2]);
-                } else if (preg_match("/^\s*#\s*$command\s+(.*)/", $entry, $match)) {
+                } else if (preg_match('/^\s*#\s*' . str_replace('$', '\$', $command) . '\s+(.*)/', $entry, $match)) {
                     $rule['entry'] = $command . ' ' . trim($match[1]);
                     $rule['enabled'] = FALSE;
                     $rule['description'] = '';
-                } else if (preg_match("/^\s*$command\s+([^#]*)#(.*)/", $entry, $match)) {
+                } else if (preg_match('/^\s*' . str_replace('$', '\$', $command) . '\s+([^#]*)#(.*)/', $entry, $match)) {
                     $rule['entry'] = $command . ' ' . trim($match[1]);
                     $rule['enabled'] = TRUE;
                     $rule['description'] = trim($match[2]);
@@ -210,6 +211,9 @@ class Firewall_Custom extends Engine
 
         if (! $this->is_loaded)
             $this->_load_configuration();
+
+        // Override any occurence of iptables and replace with lock-save $IPTABLES variable
+        $entry = preg_replace('/^iptables\s+(.*)/', '$IPTABLES \1', $entry);
 
         Validation_Exception::is_valid($this->validate_entry($entry));
         Validation_Exception::is_valid($this->validate_description($description));
@@ -453,7 +457,7 @@ class Firewall_Custom extends Engine
         $valid = FALSE;
 
         foreach ($this->commands as $command) {
-            if (preg_match("/^$command\s+.*/", $entry))
+            if (preg_match('/^' . str_replace('$', '\$', $command) . '\s+.*/', $entry))
                 $valid = TRUE;
 
             if (preg_match("/;/", $entry))

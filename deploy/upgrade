@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Replace instances of [/usr/sbin/]iptables with $IPTABLES constant
+sed -i -e 's/\/usr\/sbin\/iptables/$IPTABLES/' /etc/clearos/firewall.d/custom
+sed -i -e 's/iptables/$IPTABLES/' /etc/clearos/firewall.d/custom

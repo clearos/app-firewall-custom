@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'firewall_custom';
-$app['version'] = '2.1.6';
+$app['version'] = '2.1.7';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -14,7 +14,8 @@ $app['license_core'] = 'LGPLv3';
 $app['summary'] = lang('firewall_custom_summary');
 $app['description'] = lang('firewall_custom_app_description');
 $app['tooltip'] = array(
-    lang('firewall_custom_help_dragging')
+    lang('firewall_custom_help_dragging'),
+    lang('firewall_custom_help_iptables_constant')
 );
 
 /////////////////////////////////////////////////////////////////////////////
