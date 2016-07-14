@@ -103,7 +103,9 @@ class Firewall_Custom extends Engine
     // V A R I A B L E S
     ///////////////////////////////////////////////////////////////////////////////
 
-    protected $configuration = NULL;
+    protected $configuration = array();
+    protected $ipv4_index = -1;
+    protected $ipv6_index = -1;
     protected $is_loaded = FALSE;
     protected $commands = array();
 
@@ -130,7 +132,7 @@ class Firewall_Custom extends Engine
      * @throws Engine_Exception
      */
 
-    public function get_rules()
+    public function get_rules($type = 'ALL')
     {
         clearos_profile(__METHOD__, __LINE__);
 
@@ -143,7 +145,18 @@ class Firewall_Custom extends Engine
 
         foreach ($this->configuration as $entry) {
 
+            // If we are not on an actual rule, increment index (used in line number ordering) and bail out of loop
+            if (key($entry) != 'ipv4' && key($entry) != 'ipv6') {
+                $index++;
+                continue;
+            }
+            // Filter
+            if ($type != 'ALL' && $type != key($entry)) {
+                $index++;
+                continue;
+            }
             $rule = array (
+                'type' => key($entry),
                 'line' => $index,
                 'enabled' => FALSE,
                 'description' => '',
@@ -151,15 +164,15 @@ class Firewall_Custom extends Engine
             );
 
             foreach ($this->commands as $command) {
-                if (preg_match('/^\s*#\s*' . str_replace('$', '\$', $command) . '\s+([^#]*)#(.*)/', $entry, $match)) {
+                if (preg_match('/^\s*#\s*' . str_replace('$', '\$', $command) . '\s+([^#]*)#(.*)/', current($entry), $match)) {
                     $rule['entry'] = $command . ' ' . trim($match[1]);
                     $rule['enabled'] = FALSE;
                     $rule['description'] = trim($match[2]);
-                } else if (preg_match('/^\s*#\s*' . str_replace('$', '\$', $command) . '\s+(.*)/', $entry, $match)) {
+                } else if (preg_match('/^\s*#\s*' . str_replace('$', '\$', $command) . '\s+(.*)/', current($entry), $match)) {
                     $rule['entry'] = $command . ' ' . trim($match[1]);
                     $rule['enabled'] = FALSE;
                     $rule['description'] = '';
-                } else if (preg_match('/^\s*' . str_replace('$', '\$', $command) . '\s+([^#]*)#(.*)/', $entry, $match)) {
+                } else if (preg_match('/^\s*' . str_replace('$', '\$', $command) . '\s+([^#]*)#(.*)/', current($entry), $match)) {
                     $rule['entry'] = $command . ' ' . trim($match[1]);
                     $rule['enabled'] = TRUE;
                     $rule['description'] = trim($match[2]);
@@ -196,16 +209,16 @@ class Firewall_Custom extends Engine
     /**
      * Add new rule
      *
+     * @param String  $type        ipv4 or ipv6
      * @param String  $entry       line entry
      * @param String  $description rule description
      * @param Boolean $enabled     enabled/disabled
-     * @param int     $priority    rule priority
      *
      * @return void
      * @throws Engine_Exception
      */
 
-    public function add_rule($entry, $description, $enabled, $priority)
+    public function add_rule($type, $entry, $description, $enabled)
     {
         clearos_profile(__METHOD__, __LINE__);
 
@@ -218,16 +231,12 @@ class Firewall_Custom extends Engine
         Validation_Exception::is_valid($this->validate_entry($entry));
         Validation_Exception::is_valid($this->validate_description($description));
 
-        if ($priority > 0)
-            array_unshift(
-                $this->configuration,
-                ($enabled ? "" : "# ") . $entry . (isset($description) ? " # " . $description : "")
-            );
-        else
-            array_push(
-                $this->configuration,
-                ($enabled ? "" : "# ") . $entry . (isset($description) ? " # " . $description : "")
-            );
+        array_splice(
+            $this->configuration,
+            (1 + ($type == 'ipv4' ? $this->ipv4_index : $this->ipv6_index)),
+            0,
+            ($enabled ? "" : "# ") . $entry . (isset($description) ? " # " . $description : "")
+        );
 
         // Rule has been added, but it might be in front of top-header comments
         if ($priority > 0) {
@@ -309,24 +318,46 @@ class Firewall_Custom extends Engine
     /**
      * Set rules using array
      *
-     * @param array $rules rules
+     * @param String $type  ipv4 or ipv6
+     * @param array  $rules rules
      *
      * @return void
      * @throws Engine_Exception
      */
 
-    public function set_rules($rules)
+    public function set_rules($type, $rules)
     {
         clearos_profile(__METHOD__, __LINE__);
 
         if (! $this->is_loaded)
             $this->_load_configuration();
 
+        $new_order = array();
+        $section_found = FALSE;
+        foreach ($this->configuration as $line) {
+            if (preg_match("/.*FW_PROTO.*" . $type . ".*/", current($line))) {
+                // Add the bash shell
+                $new_order[] = $line;
+                // Now add the new rules
+                foreach ($rules as $rule) {
+                    $new_order[] = $rule;
+                }
+                // Set our marker so we know to ignore the old rules for the section we're working on
+                $section_found = TRUE;
+            } else if (preg_match("/^fi$/", current($line))) {
+                $new_order[] = $line;
+                // Found end of bash...
+                $section_found = FALSE;
+            } else if ($section_found) {
+                continue;
+            } else {
+                $new_order[] = $line;
+            }
+        }
+
         unset($this->configuration);
-
-        foreach ($rules as $rule)
-            $this->configuration[] = $rule;
-
+        $this->configuration = $new_order;
+        
         // And save
         $this->_save_configuration();
     }
@@ -400,7 +431,31 @@ class Firewall_Custom extends Engine
 
         try {
             $file = new File(self::FILE_CONFIG);
-            $this->configuration = $file->get_contents_as_array();
+            $lines = $file->get_contents_as_array();
+            $type = 'unknown';
+            $index = 0;
+            foreach ($lines as $line) {
+                if (preg_match("/.*FW_PROTO.*ipv4.*/", $line)) {
+                    $this->ipv4_index = $index;
+                    $this->configuration[] = array('bash' => $line);
+                    $type = 'ipv4';
+                    $index++;
+                    continue;
+                } else if (preg_match("/.*FW_PROTO.*ipv6.*/", $line)) {
+                    $this->ipv6_index = $index;
+                    $this->configuration[] = array('bash' => $line);
+                    $index++;
+                    $type = 'ipv6';
+                    continue;
+                } else if (preg_match("/^fi$/", $line)) {
+                    $this->configuration[] = array('bash' => $line);
+                    $type = 'unknown';
+                    $index++;
+                    continue;
+                }
+                $this->configuration[] = array($type => $line);
+                $index++;
+            }
         } catch (File_Not_Found_Exception $e) {
             // Not fatal
         }
@@ -434,7 +489,18 @@ class Firewall_Custom extends Engine
         // Write out the file
         //-------------------
 
-        $file->add_lines(implode("\n", $this->configuration) . "\n");
+        $contents = array();
+        foreach ($this->configuration as $line) {
+            if (is_array($line)) {
+                if (key($line) == 'bash' || key($line) == 'unknown')
+                    $contents[] = current($line);
+                else
+                    $contents[] = "\t" . trim(current($line));
+            } else {
+                $contents[] = "\t" . trim($line);
+            }
+        }
+        $file->dump_contents_from_array($contents);
         $this->is_loaded = FALSE;
     }
 

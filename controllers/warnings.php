@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Firewall Custom controller.
+ * Firewall Custom Warnings controller.
  *
  * @category   apps
  * @package    firewall-custom
@@ -51,7 +51,7 @@ use \clearos\apps\firewall_custom\Firewall_Custom as Firewall_Custom_Class;
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
 
-class Firewall_Custom extends ClearOS_Controller
+class Warnings extends ClearOS_Controller
 {
 
     /**
@@ -73,8 +73,18 @@ class Firewall_Custom extends ClearOS_Controller
         // Load view data
         //---------------
 
-        $views = array('firewall_custom/warnings', 'firewall_custom/ipv4', 'firewall_custom/ipv6');
+        try {
+            $data['rules'] = $this->firewall_custom->get_rules();
+            $data['network_mode'] = $this->network->get_mode();
+            $data['panic'] = $this->firewall->is_panic();
+        } catch (Exception $e) {
+            $this->page->view_exception($e);
+            return;
+        }
 
-        $this->page->view_forms($views, lang('firewall_custom_app_name'));
+        // Load view
+        //----------
+
+        $this->page->view_form('warnings', $data, lang('firewall_custom_app_name'));
     }
 }

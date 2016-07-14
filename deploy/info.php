@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 $app['basename'] = 'firewall_custom';
-$app['version'] = '2.1.7';
+$app['version'] = '2.1.8';
 $app['release'] = '1';
 $app['vendor'] = 'ClearFoundation';
 $app['packager'] = 'ClearFoundation';
@@ -31,11 +31,21 @@ $app['subcategory'] = lang('base_subcategory_firewall');
 /////////////////////////////////////////////////////////////////////////////
 
 $app['requires'] = array(
-    'app-firewall >= 1:1.6.5',
+    'app-firewall >= 1:2.2.7',
     'app-network-core >= 1:1.5.1',
     'app-base-core >= 1:1.6.5'
 );
 
+$app['core_file_manifest'] = array(
+    'custom' => array(
+        'target' => '/etc/clearos/firewall.d/custom',
+        'mode' => '0755',
+        'owner' => 'root',
+        'group' => 'root',
+        'config' => TRUE,
+        'config_params' => 'noreplace'
+    )
+);
 $app['delete_dependency'] = array(
     'app-firewall-custom-core'
 );

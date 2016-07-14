@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Firewall Custom controller.
+ * Firewall Custom IPv6 controller.
  *
  * @category   apps
  * @package    firewall-custom
@@ -33,14 +33,14 @@
 // D E P E N D E N C I E S
 ///////////////////////////////////////////////////////////////////////////////
 
-use \clearos\apps\firewall_custom\Firewall_Custom as Firewall_Custom_Class;
+require_once clearos_app_base('firewall_custom') . '/controllers/custom_rules.php';
 
 ///////////////////////////////////////////////////////////////////////////////
 // C L A S S
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Firewall Custom controller.
+ * Firewall Custom IPV6 controller.
  *
  * @category   apps
  * @package    firewall-custom
@@ -51,30 +51,19 @@ use \clearos\apps\firewall_custom\Firewall_Custom as Firewall_Custom_Class;
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
 
-class Firewall_Custom extends ClearOS_Controller
+class IPV6 extends Custom_Rules
 {
-
     /**
-     * Firewall Custom default controller
+     * IPv6 constructor.
+     *
+     * @param string $type type
      *
      * @return view
      */
 
-    function index()
+    function __construct($type)
     {
-        // Load dependencies
-        //------------------
-
-        $this->lang->load('firewall_custom');
-        $this->load->library('firewall/Firewall');
-        $this->load->library('firewall_custom/Firewall_Custom');
-        $this->load->library('network/Network');
-
-        // Load view data
-        //---------------
-
-        $views = array('firewall_custom/warnings', 'firewall_custom/ipv4', 'firewall_custom/ipv6');
-
-        $this->page->view_forms($views, lang('firewall_custom_app_name'));
+        parent::__construct('ipv6');
     }
+
 }

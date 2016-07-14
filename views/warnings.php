@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Firewall Custom controller.
+ * Custom firewall warnings and messages view.
  *
  * @category   apps
  * @package    firewall-custom
- * @subpackage controllers
+ * @subpackage views
  * @author     ClearFoundation <developer@clearfoundation.com>
  * @copyright  2011-2016 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
@@ -25,56 +25,35 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+//  
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// D E P E N D E N C I E S
+// Load dependencies
 ///////////////////////////////////////////////////////////////////////////////
 
-use \clearos\apps\firewall_custom\Firewall_Custom as Firewall_Custom_Class;
+use \clearos\apps\network\Network as Network;
+
+$this->lang->load('firewall');
+$this->lang->load('firewall_custom');
 
 ///////////////////////////////////////////////////////////////////////////////
-// C L A S S
+// Warnings
 ///////////////////////////////////////////////////////////////////////////////
 
-/**
- * Firewall Custom controller.
- *
- * @category   apps
- * @package    firewall-custom
- * @subpackage controllers
- * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2016 ClearFoundation
- * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
- * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
- */
+if ($panic)
+    $this->load->view('firewall/panic');
 
-class Firewall_Custom extends ClearOS_Controller
-{
+if ($network_mode == Network::MODE_TRUSTED_STANDALONE)
+    $this->load->view('network/firewall_verify');
 
-    /**
-     * Firewall Custom default controller
-     *
-     * @return view
-     */
-
-    function index()
-    {
-        // Load dependencies
-        //------------------
-
-        $this->lang->load('firewall_custom');
-        $this->load->library('firewall/Firewall');
-        $this->load->library('firewall_custom/Firewall_Custom');
-        $this->load->library('network/Network');
-
-        // Load view data
-        //---------------
-
-        $views = array('firewall_custom/warnings', 'firewall_custom/ipv4', 'firewall_custom/ipv6');
-
-        $this->page->view_forms($views, lang('firewall_custom_app_name'));
-    }
-}
+echo dialogbox_confirm(
+    lang('firewall_custom_restart_required'),
+    '/app/firewall_custom/restart',
+    '/app/firewall_custom',
+    array(
+        'id' => 'restart_required',
+        'hidden' => TRUE
+    )
+);

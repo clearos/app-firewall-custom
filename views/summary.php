@@ -7,7 +7,7 @@
  * @package    firewall-custom
  * @subpackage views
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011 ClearFoundation
+ * @copyright  2011-2016 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
@@ -39,26 +39,6 @@ $this->lang->load('firewall');
 $this->lang->load('firewall_custom');
 
 ///////////////////////////////////////////////////////////////////////////////
-// Warnings
-///////////////////////////////////////////////////////////////////////////////
-
-if ($panic)
-    $this->load->view('firewall/panic');
-
-if ($network_mode == Network::MODE_TRUSTED_STANDALONE)
-    $this->load->view('network/firewall_verify');
-
-echo dialogbox_confirm(
-    lang('firewall_custom_restart_required'),
-    '/app/firewall_custom/restart',
-    '/app/firewall_custom',
-    array(
-        'id' => 'restart_required',
-        'hidden' => TRUE
-    )
-);
-
-///////////////////////////////////////////////////////////////////////////////
 // Headers
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +51,7 @@ $headers = array(
 // Anchors 
 ///////////////////////////////////////////////////////////////////////////////
 
-$anchors = array(anchor_add('/app/firewall_custom/add_edit'));
+$anchors = array(anchor_add('/app/firewall_custom/' . $type . '/add_edit'));
 
 ///////////////////////////////////////////////////////////////////////////////
 // Rules
@@ -87,14 +67,14 @@ foreach ($rules as $line => $rule) {
 
     $item['anchors'] = button_set(
         array(
-            $state_anchor('/app/firewall_custom/toggle/' . $rule['line']),
-            anchor_edit('/app/firewall_custom/add_edit/' . $rule['line']),
-            anchor_delete('/app/firewall_custom/delete/' . $rule['line'])
+            $state_anchor('/app/firewall_custom/' . $type . '/toggle/' . $rule['line']),
+            anchor_edit('/app/firewall_custom/' . $type . '/add_edit/' . $rule['line']),
+            anchor_delete('/app/firewall_custom/' . $type . '/delete/' . $rule['line'])
         )
     );
-    $brief = "<span class='custom-rule'>" . $rule['entry'] . "</span><div class='theme-hidden'>" . $rule['raw'] . "</div>";
+    $brief = "<span class='custom-rule'>" . $rule['entry'] . "</span><div class='theme-hidden'>" . current($rule['raw']) . "</div>";
     if (strlen($brief) > 20)
-        $brief = "<a href='#' class='view_rule'>" . substr($rule['entry'], 0, 20) . "...<span class='custom-rule theme-hidden'>" . $rule['entry'] . "</span><div class='theme-hidden'>" . $rule['raw'] . "</div></a>";
+        $brief = "<a href='#' class='view_rule'>" . substr($rule['entry'], 0, 20) . "...<span class='custom-rule theme-hidden'>" . $rule['entry'] . "</span><div class='theme-hidden'>" . current($rule['raw']) . "</div></a>";
     $item['details'] = array(
         $rule['description'],
         $brief
@@ -109,13 +89,14 @@ foreach ($rules as $line => $rule) {
 
 $options = array (
     'sort' => FALSE,
-    'id' => 'summary_rule',
+    'id' => 'summary_rule_' . $type,
+    'class' => 'fw-sortable',
     'row-reorder' => TRUE,
     'row-enable-disable' => TRUE
 );
 
 echo summary_table(
-    lang('firewall_rules'),
+    lang('firewall_rules') . ' - ' . ($type == 'ipv4' ? lang('firewall_ip_v4') : lang('firewall_ip_v6')),
     $anchors,
     $headers,
     $items,

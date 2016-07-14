@@ -1,7 +1,7 @@
 
 Name: app-firewall-custom
 Epoch: 1
-Version: 2.1.7
+Version: 2.1.8
 Release: 1%{dist}
 Summary: Custom Firewall
 License: GPLv3
@@ -10,7 +10,7 @@ Source: %{name}-%{version}.tar.gz
 Buildarch: noarch
 Requires: %{name}-core = 1:%{version}-%{release}
 Requires: app-base
-Requires: app-firewall >= 1:1.6.5
+Requires: app-firewall >= 1:2.2.7
 Requires: app-network-core >= 1:1.5.1
 Requires: app-base-core >= 1:1.6.5
 
@@ -36,6 +36,7 @@ This package provides the core API and libraries.
 mkdir -p -m 755 %{buildroot}/usr/clearos/apps/firewall_custom
 cp -r * %{buildroot}/usr/clearos/apps/firewall_custom/
 
+install -D -m 0755 packaging/custom %{buildroot}/etc/clearos/firewall.d/custom
 
 %post
 logger -p local6.notice -t installer 'app-firewall-custom - installing'
@@ -77,3 +78,4 @@ exit 0
 /usr/clearos/apps/firewall_custom/deploy
 /usr/clearos/apps/firewall_custom/language
 /usr/clearos/apps/firewall_custom/libraries
+%config(noreplace) /etc/clearos/firewall.d/custom

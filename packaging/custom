@@ -1,0 +1,15 @@
+################################
+# Created by API - Do NOT Edit #
+################################
+
+# IPv4 Custom Firewall Rules
+#===========================
+
+if [ "$FW_PROTO" == "ipv4" ]; then
+fi
+
+# IPv6 Custom Firewall Rules
+#===========================
+
+if [ "$FW_PROTO" == "ipv6" ]; then
+fi
