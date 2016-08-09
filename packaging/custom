@@ -5,11 +5,11 @@
 # IPv4 Custom Firewall Rules
 #===========================
 
-if [ "$FW_PROTO" == "ipv4" ]; then
+if [ "$FW_PROTO" == "ipv4" ]; then true
 fi
 
 # IPv6 Custom Firewall Rules
 #===========================
 
-if [ "$FW_PROTO" == "ipv6" ]; then
+if [ "$FW_PROTO" == "ipv6" ]; then true
 fi

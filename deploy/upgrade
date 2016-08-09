@@ -11,7 +11,7 @@ sed -i -e 's/iptables/$IPTABLES/' $configlet
 #-------------------------------------
 if [ -f $configlet ];then
     if ! grep -q FW_PROTO $configlet;then
-        sed -i '1s/^/if [ \"\$FW_PROTO\" == \"ipv4\" ]; then\n/' $configlet
+        sed -i '1s/^/if [ \"\$FW_PROTO\" == \"ipv4\" ]; then true\n/' $configlet
         sed -i '1s/^/\n/' $configlet
         sed -i '1s/^/#===========================\n/' $configlet
         sed -i '1s/^/# IPv4 Custom Firewall Rules\n/' $configlet
@@ -22,8 +22,7 @@ if [ -f $configlet ];then
         sed -i -e "\$afi\n" $configlet
         sed -i -e "\$a# IPv6 Custom Firewall Rules" $configlet
         sed -i -e "\$a#===========================\n" $configlet
-        sed -i -e "\$aif [ \"\$FW_PROTO\" == \"ipv6\"" $configlet
+        sed -i -e "\$aif [ \"\$FW_PROTO\" == \"ipv6\" ]; then true" $configlet
         sed -i -e "\$afi" $configlet
     fi
 fi
-
