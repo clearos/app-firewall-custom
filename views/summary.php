@@ -107,6 +107,8 @@ foreach ($rules as $line => $rule) {
 // Summary table
 ///////////////////////////////////////////////////////////////////////////////
 
+echo infobox_highlight(lang('base_help'), lang('firewall_custom_help_iptables_constant'));
+
 $options = array (
     'sort' => FALSE,
     'id' => 'summary_rule',

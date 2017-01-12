@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Replace instances of iptables with $IPTABLES constant
+sed -i -e 's/iptables/$IPTABLES/' /etc/clearos/firewall.d/custom
