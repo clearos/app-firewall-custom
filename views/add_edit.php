@@ -42,13 +42,13 @@ $this->lang->load('firewall_custom');
 ///////////////////////////////////////////////////////////////////////////////
 
 if ($line >= 0) {
-    $form = current_url() . '/' . $line;
+    $form = 'firewall_custom/add_edit/' . $line;
     $buttons = array(
         form_submit_update('submit_standard', 'high'),
         anchor_cancel('/app/firewall_custom')
     );
 } else {
-    $form = current_url();
+    $form = 'firewall_custom/add_edit/';
     $buttons = array(
         form_submit_add('submit_standard', 'high'),
         anchor_cancel('/app/firewall_custom')
@@ -60,7 +60,7 @@ if ($line >= 0) {
 ///////////////////////////////////////////////////////////////////////////////
 
 echo form_open($form);
-echo form_header(lang('firewall_rule') . ' - ' . ($type == 'ipv4' ? lang('firewall_ip_v4') : lang('firewall_ip_v6')));
+echo form_header(lang('firewall_rule'));
 
 echo field_input('entry', $entry, lang('firewall_rule'));
 echo field_input('description', $description, lang('base_description'));
