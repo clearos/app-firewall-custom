@@ -111,6 +111,7 @@ echo infobox_highlight(lang('base_help'), lang('firewall_custom_help_iptables_co
 
 $options = array (
     'sort' => FALSE,
+    'pagination' => FALSE,
     'id' => 'summary_rule',
     'row-reorder' => TRUE,
     'row-enable-disable' => TRUE
