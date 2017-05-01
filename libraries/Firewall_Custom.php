@@ -122,7 +122,7 @@ class Firewall_Custom extends Engine
         clearos_profile(__METHOD__, __LINE__);
 
         // $IPTABLES constant for /usr/sbin/iptables to avoid locking issues
-        $this->commands = array('iptables', '$IPTABLES', 'ebtables');
+        $this->commands = array('ip6tables', 'iptables', '$IPTABLES', 'ebtables');
     }
 
     /**
@@ -227,6 +227,7 @@ class Firewall_Custom extends Engine
 
         // Override any occurence of iptables and replace with lock-save $IPTABLES variable
         $entry = preg_replace('/^iptables\s+(.*)/', '$IPTABLES \1', $entry);
+        $entry = preg_replace('/^ip6tables\s+(.*)/', '$IPTABLES \1', $entry);
 
         Validation_Exception::is_valid($this->validate_entry($entry));
         Validation_Exception::is_valid($this->validate_description($description));
