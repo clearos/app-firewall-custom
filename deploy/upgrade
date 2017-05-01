@@ -4,11 +4,13 @@ configlet="/etc/clearos/firewall.d/custom"
 
 # Replace instances of [/usr/sbin/]iptables with $IPTABLES constant
 #------------------------------------------------------------------
+
 sed -i -e 's/\/usr\/sbin\/iptables/$IPTABLES/' $configlet
 sed -i -e 's/iptables/$IPTABLES/' $configlet
 
 # Modify fw script to handle ipv4/ipv6
 #-------------------------------------
+
 if [ -f $configlet ];then
     if ! grep -q FW_PROTO $configlet;then
         sed -i '1s/^/if [ \"\$FW_PROTO\" == \"ipv4\" ]; then true\n/' $configlet
