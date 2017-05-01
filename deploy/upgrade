@@ -1,4 +1,30 @@
 #!/bin/sh
 
-# Replace instances of iptables with $IPTABLES constant
-sed -i -e 's/iptables/$IPTABLES/' /etc/clearos/firewall.d/custom
+configlet="/etc/clearos/firewall.d/custom"
+
+# Replace instances of [/usr/sbin/]iptables with $IPTABLES constant
+#------------------------------------------------------------------
+
+sed -i -e 's/\/usr\/sbin\/iptables/$IPTABLES/' $configlet
+sed -i -e 's/iptables/$IPTABLES/' $configlet
+
+# Modify fw script to handle ipv4/ipv6
+#-------------------------------------
+
+if [ -f $configlet ];then
+    if ! grep -q FW_PROTO $configlet;then
+        sed -i '1s/^/if [ \"\$FW_PROTO\" == \"ipv4\" ]; then true\n/' $configlet
+        sed -i '1s/^/\n/' $configlet
+        sed -i '1s/^/#===========================\n/' $configlet
+        sed -i '1s/^/# IPv4 Custom Firewall Rules\n/' $configlet
+        sed -i '1s/^/\n/' $configlet
+        sed -i '1s/^/#######################################\n/' $configlet
+        sed -i '1s/^/# Created by API - Please Do NOT Edit #\n/' $configlet
+        sed -i '1s/^/#######################################\n/' $configlet
+        sed -i -e "\$afi\n" $configlet
+        sed -i -e "\$a# IPv6 Custom Firewall Rules" $configlet
+        sed -i -e "\$a#===========================\n" $configlet
+        sed -i -e "\$aif [ \"\$FW_PROTO\" == \"ipv6\" ]; then true" $configlet
+        sed -i -e "\$afi" $configlet
+    fi
+fi
