@@ -16,9 +16,9 @@ if [ -f $configlet ];then
         sed -i '1s/^/#===========================\n/' $configlet
         sed -i '1s/^/# IPv4 Custom Firewall Rules\n/' $configlet
         sed -i '1s/^/\n/' $configlet
-        sed -i '1s/^/################################\n/' $configlet
-        sed -i '1s/^/# Created by API - Do NOT Edit #\n/' $configlet
-        sed -i '1s/^/################################\n/' $configlet
+        sed -i '1s/^/#######################################\n/' $configlet
+        sed -i '1s/^/# Created by API - Please Do NOT Edit #\n/' $configlet
+        sed -i '1s/^/#######################################\n/' $configlet
         sed -i -e "\$afi\n" $configlet
         sed -i -e "\$a# IPv6 Custom Firewall Rules" $configlet
         sed -i -e "\$a#===========================\n" $configlet
