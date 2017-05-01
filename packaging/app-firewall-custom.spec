@@ -1,7 +1,7 @@
 
 Name: app-firewall-custom
 Epoch: 1
-Version: 2.3.3
+Version: 2.3.4
 Release: 1%{dist}
 Summary: Custom Firewall
 License: GPLv3
@@ -74,6 +74,7 @@ exit 0
 %files core
 %defattr(-,root,root)
 %exclude /usr/clearos/apps/firewall_custom/packaging
+%exclude /usr/clearos/apps/firewall_custom/unify.json
 %dir /usr/clearos/apps/firewall_custom
 /usr/clearos/apps/firewall_custom/deploy
 /usr/clearos/apps/firewall_custom/language
