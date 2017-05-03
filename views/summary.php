@@ -45,9 +45,6 @@ $this->lang->load('firewall_custom');
 if ($panic)
     $this->load->view('firewall/panic');
 
-if ($network_mode == Network::MODE_TRUSTED_STANDALONE)
-    $this->load->view('network/firewall_verify');
-
 echo dialogbox_confirm(
     lang('firewall_custom_restart_required'),
     '/app/firewall_custom/restart',
