@@ -47,36 +47,43 @@ var lang_firewall_rule = '<? echo lang('firewall_rule') ?>';
 var lang_warning = '<? echo lang('base_warning') ?>';
 
 $(document).ready(function() {
-  if ($('#summary_rule').length != 0) {
-    var table = get_table_summary_rule();
-    $('a.view_rule').click(function (e) {
-      e.preventDefault();
-      var options = new Object();
-      options.type = 'info';
-      var rule_name = $(this).closest('tr').find('td:nth-child(2)').html();
-      var rule_display = $('span:first-child', $(this).closest('tr').find('td:nth-child(3)')).html();
-      clearos_dialog_box('rule', lang_firewall_rule + ' - ' + rule_name, rule_display, options);
+    if ($('#summary_rule_ipv4').length != 0) {
+        table_ipv4 = get_table_summary_rule_ipv4();
+    }
+    if ($('#summary_rule_ipv6').length != 0) {
+        table_ipv6 = get_table_summary_rule_ipv6();
+    }
+
+    $('a.view_rule').on('click', function (e) {
+        e.preventDefault();
+        var options = new Object();
+        options.type = 'info';
+        var rule_name = $(this).closest('tr').find('td:nth-child(2)').html();
+        var rule_display = $('span:first-child', $(this).closest('tr').find('td:nth-child(3)')).html();
+        clearos_dialog_box('rule', lang_firewall_rule + ' - ' + rule_name, rule_display, options);
     });
     $('tbody.ui-sortable').sortable({
-      update: function(event, ui) {
-        var rules = [];
-        $("tr").each(function(i, tr) {
-            var rule = $('td:nth-child(3) div', $(this)).html();
-            if (rule != undefined)
-                rules.push(rule);
-        });
-        set_rules(rules);
-      }
+        update: function(event, ui) {
+            type = 'ipv4';
+            if ($(this).parent().attr('id').match('ipv6') != null)
+                type = 'ipv6';
+            var rules = [];
+            $('#summary_rule_' + type + ' tr').each(function(i, tr) {
+                var rule = $('td:nth-child(3) div', $(this)).html();
+                if (rule != undefined)
+                    rules.push(rule);
+            });
+            set_rules(type, rules);
+        }
     });
-  }
 });
 
-function set_rules(rules) {
+function set_rules(type, rules) {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: '/app/firewall_custom/set_rules',
-        data: 'ci_csrf_token=' + $.cookie('ci_csrf_token') + '&rules=' + JSON.stringify(rules),
+        url: '/app/firewall_custom/' + type + '/set_rules',
+        data: 'ci_csrf_token=' + $.cookie('ci_csrf_token') + '&type=' + type + '&rules=' + JSON.stringify(rules),
         success: function(data) {
             if (data.code == 0) {
                 return;
