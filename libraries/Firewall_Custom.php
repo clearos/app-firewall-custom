@@ -176,6 +176,10 @@ class Firewall_Custom extends Engine
                     $rule['entry'] = $command . ' ' . trim($match[1]);
                     $rule['enabled'] = TRUE;
                     $rule['description'] = trim($match[2]);
+                } else if (preg_match('/^\s*' . str_replace('$', '\$', $command) . '\s+(.*)/', current($entry), $match)) {
+                    $rule['entry'] = $command . ' ' . trim($match[1]);
+                    $rule['enabled'] = TRUE;
+                    $rule['description'] = "---";
                 }
             }
 

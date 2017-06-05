@@ -1,7 +1,7 @@
 
 Name: app-firewall-custom
 Epoch: 1
-Version: 2.3.6
+Version: 2.3.7
 Release: 1%{dist}
 Summary: Custom Firewall
 License: GPLv3

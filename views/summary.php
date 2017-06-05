@@ -92,6 +92,7 @@ $options = array (
     'id' => 'summary_rule_' . $type,
     'class' => 'fw-sortable',
     'row-reorder' => TRUE,
+    'paginate' => FALSE,
     'row-enable-disable' => TRUE
 );
 
