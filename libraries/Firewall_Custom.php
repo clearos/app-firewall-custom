@@ -126,7 +126,9 @@ class Firewall_Custom extends Engine
     }
 
     /**
-     * Get array of custom firewall rules.
+     * Returns array of custom firewall rules.
+     *
+     * @param string $type fule type
      *
      * @return array of rules
      * @throws Engine_Exception
@@ -150,11 +152,13 @@ class Firewall_Custom extends Engine
                 $index++;
                 continue;
             }
+
             // Filter
             if ($type != 'ALL' && $type != key($entry)) {
                 $index++;
                 continue;
             }
+
             $rule = array (
                 'type' => key($entry),
                 'line' => $index,
@@ -193,11 +197,11 @@ class Firewall_Custom extends Engine
     }
 
     /**
-     * Get rule
+     * Returns specific firewall rule.
      *
-     * @param String $line the line
+     * @param string $line the line
      *
-     * @return String
+     * @return string
      * @throws Engine_Exception
      */
 
@@ -205,13 +209,15 @@ class Firewall_Custom extends Engine
     {
         clearos_profile(__METHOD__, __LINE__);
 
+        Validation_Exception::is_valid($this->validate_line_number($line));
+
         $rules = $this->get_rules();
 
         return $rules[$line];
     }
 
     /**
-     * Add new rule
+     * Adds new rule.
      *
      * @param String  $type        ipv4 or ipv6
      * @param String  $entry       line entry
@@ -233,8 +239,10 @@ class Firewall_Custom extends Engine
         $entry = preg_replace('/^iptables\s+(.*)/', '$IPTABLES \1', $entry);
         $entry = preg_replace('/^ip6tables\s+(.*)/', '$IPTABLES \1', $entry);
 
+        Validation_Exception::is_valid($this->validate_ip_version($type));
         Validation_Exception::is_valid($this->validate_entry($entry));
         Validation_Exception::is_valid($this->validate_description($description));
+        Validation_Exception::is_valid($this->validate_state($enabled));
 
         array_splice(
             $this->configuration,
@@ -287,8 +295,10 @@ class Firewall_Custom extends Engine
     {
         clearos_profile(__METHOD__, __LINE__);
 
+        Validation_Exception::is_valid($this->validate_line_number($line));
         Validation_Exception::is_valid($this->validate_entry($entry));
         Validation_Exception::is_valid($this->validate_description($description));
+        Validation_Exception::is_valid($this->validate_state($enabled));
 
         if (! $this->is_loaded)
             $this->_load_configuration();
@@ -312,6 +322,8 @@ class Firewall_Custom extends Engine
     {
         clearos_profile(__METHOD__, __LINE__);
 
+        Validation_Exception::is_valid($this->validate_line_number($line));
+
         if (! $this->is_loaded)
             $this->_load_configuration();
 
@@ -321,7 +333,7 @@ class Firewall_Custom extends Engine
     }
 
     /**
-     * Set rules using array
+     * Set rules using array.
      *
      * @param String $type  ipv4 or ipv6
      * @param array  $rules rules
@@ -337,8 +349,29 @@ class Firewall_Custom extends Engine
         if (! $this->is_loaded)
             $this->_load_configuration();
 
+        // Validation
+        //-----------
+
+        Validation_Exception::is_valid($this->validate_ip_version($type));
+
+        foreach ($rules as $rule) {
+            $valid_rule = FALSE;
+
+            foreach ($this->configuration as $line_number => $details) {
+                if (isset($details[$type]) && (trim($details[$type]) == trim($rule)))
+                    $valid_rule = TRUE;
+            }
+
+            if (!$valid_rule)
+                Validation_Exception::is_valid(lang('firewall_custom_firewall_rule_invalid'));
+        }
+
+        // Re-ordering
+        //------------
+
         $new_order = array();
         $section_found = FALSE;
+
         foreach ($this->configuration as $line) {
             if (preg_match("/.*FW_PROTO.*" . $type . ".*/", current($line))) {
                 // Add the bash shell
@@ -363,37 +396,6 @@ class Firewall_Custom extends Engine
         unset($this->configuration);
         $this->configuration = $new_order;
         
-        // And save
-        $this->_save_configuration();
-    }
-
-    /**
-     * Move rule up in table
-     *
-     * @param String $line      line to delete
-     * @param int    $direction direction to move up (+1) or down (-1)
-     *
-     * @return void
-     * @throws Engine_Exception
-     */
-
-    public function set_rule_priority($line, $direction)
-    {
-        clearos_profile(__METHOD__, __LINE__);
-
-        if (! $this->is_loaded)
-            $this->_load_configuration();
-
-        // Original line
-        $moving_line = $this->configuration[$line];
-
-        // Line that will take it's place
-        $swap_line = $this->configuration[($line - $direction)];
-
-        // Now let's swap
-        $this->configuration[($line - $direction)] = $moving_line;
-        $this->configuration[$line] = $swap_line;
-
         // And save
         $this->_save_configuration();
     }
@@ -525,17 +527,20 @@ class Firewall_Custom extends Engine
     {
         clearos_profile(__METHOD__, __LINE__);
 
-        $valid = FALSE;
+        $valid_command = FALSE;
 
         foreach ($this->commands as $command) {
-            if (preg_match('/^' . str_replace('$', '\$', $command) . '\s+.*/', $entry))
-                $valid = TRUE;
+            $matches = [];
 
-            if (preg_match("/;/", $entry))
-                return lang('firewall_custom_firewall_rule_invalid');
+            if (preg_match('/^(' . str_replace('$', '\$', $command) . ')\s+(.*)/', $entry, $matches)) {
+                $valid_command = TRUE;
+
+                if (!preg_match('/^[a-zA-Z0-9:\.\-\s\/]+$/', $matches[2]))
+                    return lang('firewall_custom_firewall_rule_invalid');
+            }
         }
 
-        if (!$valid)
+        if (!$valid_command)
             return lang('firewall_custom_command_is_not_permitted');
     }
 
@@ -553,5 +558,58 @@ class Firewall_Custom extends Engine
 
         if (!preg_match("/^([\w\.\-_ ])+$/", $description))
             return lang('firewall_custom_description_invalid');
+    }
+
+    /**
+     * Validation routine for IP version.
+     *
+     * @param boolean $version version
+     *
+     * @return string error message if IP version is invalid
+     */
+
+    public function validate_ip_version($version)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        $versions = [ 'ipv4', 'ipv6' ];
+
+        if (! in_array($version, $versions))
+            return lang('firewall_custom_invalid_ip_version');
+    }
+
+    /**
+     * Validation routine for configuration line number.
+     *
+     * @param boolean $line line number
+     *
+     * @return string error message if ccnfiguration line number is invalid
+     */
+
+    public function validate_line_number($line)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (! $this->is_loaded)
+            $this->_load_configuration();
+
+        if (! array_key_exists($line, $this->configuration))
+            return lang('firewall_custom_invalid_configuration_parameter');
+    }
+
+    /**
+     * Validation routine for state.
+     *
+     * @param boolean $state state
+     *
+     * @return string error message if state is invalid
+     */
+
+    public function validate_state($state)
+    {
+        clearos_profile(__METHOD__, __LINE__);
+
+        if (! clearos_is_valid_boolean($state))
+            return lang('base_state_invalid');
     }
 }

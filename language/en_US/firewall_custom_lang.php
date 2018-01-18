@@ -9,3 +9,5 @@ $lang['firewall_custom_help_dragging'] = 'The order of your custom firewall rule
 $lang['firewall_custom_help_iptables_constant'] = '$IPTABLES is a constant for the iptables command that includes flags to prevent file locking issues.';
 $lang['firewall_custom_restart_required'] = 'The order of your rules may have changed - a firewall restart is required.';
 $lang['firewall_custom_summary'] = 'Allows customized firewall rules to be added.  In advanced or highly customised networking environments, the addition of advanced firewall rules that cannot be added using the available firewall apps (Incoming, DMZ, MultiWAN, Port Forwarding etc.) to achieve the desired security and packet routing can be accomplished using the custom firewall app.  Use of this module should be reserved for advanced users only.';
+$lang['firewall_custom_invalid_ip_version'] = 'IP version is invalid.';
+$lang['firewall_custom_invalid_configuration_parameter'] = 'Configuration parameter is invalid.';

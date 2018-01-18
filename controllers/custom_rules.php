@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Firewall Custom Custom Rules controller.
+ * Custom firewall rules controller.
  *
  * @category   apps
  * @package    firewall-custom
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2016 ClearFoundation
+ * @copyright  2011-2018 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
@@ -30,34 +30,27 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// D E P E N D E N C I E S
-///////////////////////////////////////////////////////////////////////////////
-
-use \clearos\apps\firewall_custom\Firewall_Custom as Firewall_Custom_Class;
-
-///////////////////////////////////////////////////////////////////////////////
 // C L A S S
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Firewall Custom controller.
+ * Custom firewall rules controller.
  *
  * @category   apps
  * @package    firewall-custom
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2016 ClearFoundation
+ * @copyright  2011-2018 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
 
 class Custom_Rules extends ClearOS_Controller
 {
-
     protected $type = NULL;
 
     /**
-     * Add Edit Delete constructor.
+     * Custom firewall rules constructor.
      *
      * @param string $type type (eg. ipv4, ipv6)
      *
@@ -70,8 +63,7 @@ class Custom_Rules extends ClearOS_Controller
     }
 
     /**
-    /**
-     * Firewall Custom add edit delete controller
+     * Index controller,
      *
      * @return view
      */
@@ -82,9 +74,7 @@ class Custom_Rules extends ClearOS_Controller
         //------------------
 
         $this->lang->load('firewall_custom');
-        $this->load->library('firewall/Firewall');
         $this->load->library('firewall_custom/Firewall_Custom');
-        $this->load->library('network/Network');
 
         // Load view data
         //---------------
@@ -129,6 +119,7 @@ class Custom_Rules extends ClearOS_Controller
 
         $this->form_validation->set_policy('entry', 'firewall_custom/Firewall_Custom', 'validate_entry', TRUE);
         $this->form_validation->set_policy('description', 'firewall_custom/Firewall_Custom', 'validate_description', TRUE);
+        $this->form_validation->set_policy('enabled', 'firewall_custom/Firewall_Custom', 'validate_state', TRUE);
 
         // Handle form submit
         //-------------------
@@ -245,39 +236,6 @@ class Custom_Rules extends ClearOS_Controller
     }
 
     /**
-     * Prioritize rule.
-     *
-     * @param integer $line     line number
-     * @param integer $priority priority
-     *
-     * @return view
-     */
-
-    function priority($line, $priority)
-    {
-        // Load libraries
-        //---------------
-
-        $this->load->library('firewall_custom/Firewall_Custom');
-
-        // Load view data
-        //---------------
-
-        try {
-            $this->firewall_custom->set_rule_priority($line, $priority);
-            $this->page->set_status_updated();
-        } catch (Exception $e) {
-            $this->page->view_exception($e);
-            return;
-        }
-
-        // Load view
-        //----------
-
-        redirect('/firewall_custom');
-    }
-
-    /**
      * Ajax set rules controller
      *
      * @return JSON
@@ -301,5 +259,4 @@ class Custom_Rules extends ClearOS_Controller
             echo json_encode(Array('code' => clearos_exception_code($e), 'errmsg' => clearos_exception_message($e)));
         }
     }
-
 }
