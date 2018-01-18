@@ -7,7 +7,7 @@
  * @package    firewall-custom
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2016 ClearFoundation
+ * @copyright  2011-2018 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
@@ -30,12 +30,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// D E P E N D E N C I E S
-///////////////////////////////////////////////////////////////////////////////
-
-use \clearos\apps\firewall_custom\Firewall_Custom as Firewall_Custom_Class;
-
-///////////////////////////////////////////////////////////////////////////////
 // C L A S S
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -46,14 +40,13 @@ use \clearos\apps\firewall_custom\Firewall_Custom as Firewall_Custom_Class;
  * @package    firewall-custom
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2016 ClearFoundation
+ * @copyright  2011-2018 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
 
 class Firewall_Custom extends ClearOS_Controller
 {
-
     /**
      * Firewall Custom default controller
      *
