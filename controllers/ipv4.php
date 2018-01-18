@@ -7,7 +7,7 @@
  * @package    firewall-custom
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2016 ClearFoundation
+ * @copyright  2011-2018 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
@@ -46,7 +46,7 @@ require_once clearos_app_base('firewall_custom') . '/controllers/custom_rules.ph
  * @package    firewall-custom
  * @subpackage controllers
  * @author     ClearFoundation <developer@clearfoundation.com>
- * @copyright  2011-2016 ClearFoundation
+ * @copyright  2011-2018 ClearFoundation
  * @license    http://www.gnu.org/copyleft/gpl.html GNU General Public License version 3 or later
  * @link       http://www.clearfoundation.com/docs/developer/apps/firewall_custom/
  */
@@ -56,8 +56,6 @@ class IPV4 extends Custom_Rules
     /**
      * IPv4 constructor.
      *
-     * @param string $type type
-     *
      * @return view
      */
 
@@ -65,5 +63,4 @@ class IPV4 extends Custom_Rules
     {
         parent::__construct('ipv4');
     }
-
 }
