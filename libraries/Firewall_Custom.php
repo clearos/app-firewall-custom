@@ -535,7 +535,7 @@ class Firewall_Custom extends Engine
             if (preg_match('/^(' . str_replace('$', '\$', $command) . ')\s+(.*)/', $entry, $matches)) {
                 $valid_command = TRUE;
 
-                if (!preg_match('/^[a-zA-Z0-9:\.\-\s\/]+$/', $matches[2]))
+                if (!preg_match('/^[a-zA-Z0-9:\,\.\-\s\/]+$/', $matches[2]))
                     return lang('firewall_custom_firewall_rule_invalid');
             }
         }
